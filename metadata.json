@@ -1,0 +1,6 @@
+{
+  "name": "NGPM 网络性能管理与流量分析系统",
+  "description": "企业级 NGPM 网络性能监测与深度流量分析平台，支持全维度会话关联、实时波形监控与多功能自定义时间范围查询器。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
