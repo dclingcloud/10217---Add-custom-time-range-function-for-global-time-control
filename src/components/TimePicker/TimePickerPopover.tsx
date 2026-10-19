@@ -79,35 +79,11 @@ export const TimePickerPopover: React.FC<TimePickerPopoverProps> = ({
     if (activePresetId === id) setActivePresetId(null);
   };
 
-  const getNextDateStr = (dateStr: string): string => {
-    const parts = dateStr.split('-');
-    if (parts.length === 3) {
-      const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-      d.setDate(d.getDate() + 1);
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
-    }
-    return dateStr;
-  };
-
   const handleApplyPreset = (preset: CustomTimePreset) => {
     setActivePresetId(preset.id);
-    const [sH, sM] = preset.startTime.split(':').map(Number);
-    const [eH, eM] = preset.endTime.split(':').map(Number);
-    const isCross = preset.isCrossDay ?? (eH * 60 + eM < sH * 60 + sM);
-
     setStartTime(preset.startTime);
     setEndTime(preset.endTime);
-
-    if (isCross) {
-      // 跨天情况：开始日期为当前选定日期，结束日期自动顺延为次日
-      setEndDate(getNextDateStr(startDate));
-    } else {
-      // 当日时段：结束日期与开始日期相同
-      setEndDate(startDate);
-    }
+    setEndDate(startDate);
   };
 
   const handleQuickOptionClick = (label: string) => {
@@ -316,9 +292,6 @@ export const TimePickerPopover: React.FC<TimePickerPopoverProps> = ({
                     <div className="space-y-1.5 max-h-[110px] overflow-y-auto pr-1">
                       {presets.map((preset) => {
                         const isActive = activePresetId === preset.id;
-                        const [sH, sM] = preset.startTime.split(':').map(Number);
-                        const [eH, eM] = preset.endTime.split(':').map(Number);
-                        const isCross = preset.isCrossDay ?? (eH * 60 + eM < sH * 60 + sM);
                         return (
                           <div
                             key={preset.id}
@@ -330,16 +303,9 @@ export const TimePickerPopover: React.FC<TimePickerPopoverProps> = ({
                             }`}
                           >
                             <div className="flex flex-col min-w-0 pr-1">
-                              <div className="flex items-center space-x-1.5">
-                                <span className="font-medium truncate">{preset.name}</span>
-                                {isCross && (
-                                  <span className="text-[10px] text-amber-700 bg-amber-100/80 border border-amber-300/60 px-1 rounded font-normal shrink-0">
-                                    跨天
-                                  </span>
-                                )}
-                              </div>
+                              <span className="font-medium truncate">{preset.name}</span>
                               <span className="text-[10px] text-gray-500 font-mono truncate mt-0.5">
-                                {preset.startTime} — {preset.endTime} {isCross ? '(次日)' : ''}
+                                {preset.startTime} — {preset.endTime}
                               </span>
                             </div>
                             <div className="flex items-center space-x-1 shrink-0">

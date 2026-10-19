@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Moon } from 'lucide-react';
+import { X } from 'lucide-react';
 import { CustomTimePreset } from '../../types/dashboard';
 import { TimeScrollPicker } from './TimeScrollPicker';
 
@@ -21,13 +21,6 @@ export const CustomPresetModal: React.FC<CustomPresetModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Automatically check if start time > end time (cross day)
-  const isCrossDay = (() => {
-    const [sH, sM] = startTime.split(':').map(Number);
-    const [eH, eM] = endTime.split(':').map(Number);
-    return sH * 60 + sM > eH * 60 + eM;
-  })();
-
   const handleTimeConfirm = (sTime: string, eTime: string) => {
     setStartTime(sTime);
     setEndTime(eTime);
@@ -43,7 +36,6 @@ export const CustomPresetModal: React.FC<CustomPresetModalProps> = ({
       name: name.trim(),
       startTime,
       endTime,
-      isCrossDay,
       createdAt: Date.now(),
     };
 
@@ -77,7 +69,7 @@ export const CustomPresetModal: React.FC<CustomPresetModalProps> = ({
             <input
               type="text"
               required
-              placeholder="例如：工作时间、夜间排查、跨天运维"
+              placeholder="例如：工作时间、晨间巡检、业务低峰"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-2.5 py-1.5 border border-gray-300 rounded-[2px] text-xs focus:outline-none focus:border-[#0091ff] focus:ring-1 focus:ring-[#0091ff]"
@@ -86,17 +78,11 @@ export const CustomPresetModal: React.FC<CustomPresetModalProps> = ({
 
           {/* Time range slot selector */}
           <div className="relative">
-            <div className="flex items-center justify-between mb-1.5">
+            <div className="mb-1.5">
               <label className="text-gray-700 font-normal">时段选择</label>
-              {isCrossDay && (
-                <span className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded flex items-center space-x-1">
-                  <Moon className="w-3 h-3 text-amber-500" />
-                  <span>跨天（次日）</span>
-                </span>
-              )}
             </div>
 
-            {/* Clean full-width input box (removed 点击修改, removed - and + buttons) */}
+            {/* Clean full-width input box */}
             <div
               onClick={() => setIsPickerOpen((prev) => !prev)}
               className={`w-full px-3 py-2 border rounded-[2px] cursor-pointer transition-all flex items-center justify-between text-xs font-mono bg-white select-none ${
@@ -109,16 +95,11 @@ export const CustomPresetModal: React.FC<CustomPresetModalProps> = ({
                 <span className="font-semibold text-gray-900 text-sm">{startTime}</span>
                 <span className="text-gray-400 font-normal">—</span>
                 <span className="font-semibold text-gray-900 text-sm">{endTime}</span>
-                {isCrossDay && (
-                  <span className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200/80 px-1.5 py-0.5 rounded font-sans font-medium">
-                    次日
-                  </span>
-                )}
               </div>
               <span className="text-[11px] text-gray-400 font-sans">点击选择时段 ▾</span>
             </div>
 
-            {/* 常用时段快捷选择（去掉“示例”二字，预设 09:00-11:30、13:00-15:00 以及跨天的 22:00-01:30） */}
+            {/* 常用时段快捷选择（去掉了跨天时段） */}
             <div className="flex items-center space-x-2 mt-2.5">
               <span className="text-[11px] text-gray-500 font-medium shrink-0">常用:</span>
               <button
@@ -149,20 +130,6 @@ export const CustomPresetModal: React.FC<CustomPresetModalProps> = ({
               >
                 13:00 - 15:00
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setStartTime('22:00');
-                  setEndTime('01:30');
-                }}
-                className={`text-[11px] px-2 py-0.5 rounded border transition-colors cursor-pointer ${
-                  startTime === '22:00' && endTime === '01:30'
-                    ? 'border-amber-400 bg-amber-50 text-amber-800 font-medium'
-                    : 'border-amber-200/70 bg-amber-50/50 text-amber-800 hover:bg-amber-100/60'
-                }`}
-              >
-                22:00 - 01:30 (次日)
-              </button>
             </div>
 
             {/* Time Scroll Picker Popover */}
@@ -175,7 +142,6 @@ export const CustomPresetModal: React.FC<CustomPresetModalProps> = ({
               />
             )}
           </div>
-
 
           {/* Action buttons */}
           <div className="flex items-center justify-end space-x-2.5 pt-3 border-t border-gray-100">

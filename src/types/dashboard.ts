@@ -10,7 +10,6 @@ export interface CustomTimePreset {
   name: string;
   startTime: string; // HH:mm
   endTime: string;   // HH:mm
-  isCrossDay?: boolean; // true if spans across midnight, e.g. 23:00 - 01:00
   createdAt: number;
 }
 

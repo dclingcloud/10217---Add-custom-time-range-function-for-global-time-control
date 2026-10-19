@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 interface TimeScrollPickerProps {
   initialStartTime: string; // HH:mm
   initialEndTime: string;   // HH:mm
-  onConfirm: (startTime: string, endTime: string, isCrossDay: boolean) => void;
+  onConfirm: (startTime: string, endTime: string) => void;
   onCancel: () => void;
 }
 
@@ -27,13 +27,6 @@ export const TimeScrollPicker: React.FC<TimeScrollPickerProps> = ({
   const endHourRef = useRef<HTMLDivElement>(null);
   const endMinuteRef = useRef<HTMLDivElement>(null);
 
-  // Check if cross day (e.g. 23:00 - 01:00)
-  const isCrossDay = (() => {
-    const startVal = parseInt(startHour, 10) * 60 + parseInt(startMinute, 10);
-    const endVal = parseInt(endHour, 10) * 60 + parseInt(endMinute, 10);
-    return endVal < startVal;
-  })();
-
   const scrollToSelected = (container: HTMLDivElement | null, selectedIndex: number) => {
     if (container) {
       const itemHeight = 30; // height of each line
@@ -56,23 +49,13 @@ export const TimeScrollPicker: React.FC<TimeScrollPickerProps> = ({
   const handleApply = () => {
     const sTime = `${startHour}:${startMinute}`;
     const eTime = `${endHour}:${endMinute}`;
-    onConfirm(sTime, eTime, isCrossDay);
+    onConfirm(sTime, eTime);
   };
 
   return (
     <div className="absolute top-[38px] left-0 z-50 bg-white border border-[#e5e7eb] shadow-2xl rounded-[2px] w-[340px] text-xs text-gray-700 select-none animate-in fade-in zoom-in-95 duration-100">
       {/* Top pointing caret */}
       <div className="absolute -top-[6px] left-8 w-3 h-3 bg-white border-t border-l border-[#e5e7eb] transform rotate-45" />
-
-      {/* Cross-day prompt indicator */}
-      {isCrossDay && (
-        <div className="mx-3 mt-2.5 px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 text-[11px] rounded flex items-center justify-between">
-          <span className="font-medium">检测到跨天时段</span>
-          <span className="text-[10px] bg-amber-100 px-1 rounded font-mono">
-            次日 {endHour}:{endMinute}
-          </span>
-        </div>
-      )}
 
       {/* Main Dual Picker Columns */}
       <div className="p-3 grid grid-cols-2 gap-4 divide-x divide-gray-100">
@@ -138,7 +121,7 @@ export const TimeScrollPicker: React.FC<TimeScrollPickerProps> = ({
         {/* Right Section: 结束时间 */}
         <div className="pl-3">
           <div className="text-center font-medium text-gray-700 mb-2 pb-1 border-b border-gray-100 text-xs">
-            结束时间 {isCrossDay && <span className="text-amber-600 text-[10px]">(次日)</span>}
+            结束时间
           </div>
           <div className="relative h-[150px] flex">
             {/* Visual selection lines */}
@@ -195,7 +178,7 @@ export const TimeScrollPicker: React.FC<TimeScrollPickerProps> = ({
         </div>
       </div>
 
-      {/* Bottom Footer Actions matching Image 1 */}
+      {/* Bottom Footer Actions */}
       <div className="py-2 px-3 border-t border-gray-100 flex items-center justify-end space-x-2 bg-[#fafafa]">
         <button
           type="button"
